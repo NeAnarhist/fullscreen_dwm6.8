@@ -1,0 +1,51 @@
+diff --git a/dwm.c b/dwm.c
+index ab3a84c..9096116 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -164,6 +164,7 @@ static void drawbar(Monitor *m);
+ static void drawbars(void);
+ static void enternotify(XEvent *e);
+ static void expose(XEvent *e);
++static void fullscreen(const Arg *arg);
+ static void focus(Client *c);
+ static void focusin(XEvent *e);
+ static void focusmon(const Arg *arg);
+@@ -177,6 +178,7 @@ static void grabkeys(void);
+ static void incnmaster(const Arg *arg);
+ static void keypress(XEvent *e);
+ static void killclient(const Arg *arg);
++static void maximize(const Arg *arg);
+ static void manage(Window w, XWindowAttributes *wa);
+ static void mappingnotify(XEvent *e);
+ static void maprequest(XEvent *e);
+@@ -1507,6 +1509,30 @@ setfullscreen(Client *c, int fullscreen)
+ 	}
+ }
+ 
++void
++fullscreen(const Arg *arg) {
++Client *c = selmon->sel;
++        if (c) {
++                if (c->isfullscreen == 0)
++                        setfullscreen(c, 1);
++                else setfullscreen (c, 0);
++        } else return;
++}
++
++void
++maximize(const Arg *arg) {
++Client *c = selmon->sel;
++        if (c) {
++                if (selmon->lt[selmon->sellt] != &layouts[2]) {
++                /*      c->bw = 0; */
++                        setlayout(&((Arg) {.v = &layouts[2]})); /* Uncomment these two lines if you want the window borders to be hidden.*/
++                } else {
++                /*      c->bw = borderpx;*/
++                        setlayout(&((Arg) {.v = selmon->lt[!selmon->sellt]}));
++                }
++        } else return;
++}
++
+ void
+ setlayout(const Arg *arg)
+ {
