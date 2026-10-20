@@ -1,0 +1,63 @@
+diff --git a/dwm.c b/dwm.c
+index ab3a84c..2dd4b8e 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -183,6 +183,7 @@ static void maprequest(XEvent *e);
+ static void monocle(Monitor *m);
+ static void motionnotify(XEvent *e);
+ static void movemouse(const Arg *arg);
++static void maximaze(const Arg *arg);
+ static Client *nexttiled(Client *c);
+ static void pop(Client *c);
+ static void propertynotify(XEvent *e);
+@@ -199,6 +200,7 @@ static void sendmon(Client *c, Monitor *m);
+ static void setclientstate(Client *c, long state);
+ static void setfocus(Client *c);
+ static void setfullscreen(Client *c, int fullscreen);
++static void truefullscreen(const Arg *arg);
+ static void setlayout(const Arg *arg);
+ static void setmfact(const Arg *arg);
+ static void setup(void);
+@@ -1479,6 +1481,16 @@ setfocus(Client *c)
+ 	sendevent(c, wmatom[WMTakeFocus]);
+ }
+ 
++void
++truefullscreen(const Arg *arg) {
++Client *c = selmon->sel;
++        if (c) {
++                if (c->isfullscreen == 0)
++                        setfullscreen(c, 1);
++                else setfullscreen (c, 0);
++        } else return;
++}
++
+ void
+ setfullscreen(Client *c, int fullscreen)
+ {
+@@ -1506,6 +1518,25 @@ setfullscreen(Client *c, int fullscreen)
+ 		arrange(c->mon);
+ 	}
+ }
++void
++maximaze(const Arg *arg) {
++Client *c = selmon->sel;
++
++    const Layout *current = selmon->pertag->ltidxs
++        [selmon->pertag->curtag][selmon->sellt];
++    const Layout *previous = selmon->pertag->ltidxs
++        [selmon->pertag->curtag][selmon->sellt ^ 1];
++
++        if (c) {
++                if (selmon->lt[selmon->sellt] != &layouts[2]) { /*  if current ly is n>
++                /*      c->bw = 0; */
++                        setlayout(&((Arg) {.v = &layouts[2]}));
++                } else {
++                /*      c->bw = borderpx;*/
++                        setlayout(&((Arg) {.v = selmon->lt[!selmon->sellt]}));
++                }
++        } else return;
++}
+ 
+ void
+ setlayout(const Arg *arg)
